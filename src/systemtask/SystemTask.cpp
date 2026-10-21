@@ -41,6 +41,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::DateTime& dateTimeController,
                        Controllers::StopWatchController& stopWatchController,
                        Controllers::AlarmController& alarmController,
+                       Controllers::SleepController& sleepController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
@@ -62,6 +63,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     dateTimeController {dateTimeController},
     stopWatchController {stopWatchController},
     alarmController {alarmController},
+    sleepController {sleepController},
     watchdog {watchdog},
     notificationManager {notificationManager},
     heartRateSensor {heartRateSensor},
@@ -130,6 +132,7 @@ void SystemTask::Work() {
   batteryController.Register(this);
   motionSensor.SoftReset();
   alarmController.Init(this);
+  sleepController.Init();
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -453,6 +456,7 @@ void SystemTask::UpdateMotion() {
   auto motionValues = motionSensor.Process();
 
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
+  sleepController.OnMotion(motionValues.x, motionValues.y, motionValues.z);
 
   if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {
     if ((settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&

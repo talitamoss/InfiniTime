@@ -88,6 +88,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::StopWatchController& stopWatchController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::SleepController& sleepController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem,
@@ -105,6 +106,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motionController {motionController},
     stopWatchController {stopWatchController},
     alarmController {alarmController},
+    sleepController {sleepController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
@@ -121,6 +123,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                  motionController,
                  stopWatchController,
                  alarmController,
+                 sleepController,
                  brightnessController,
                  nullptr,
                  filesystem,
@@ -362,6 +365,8 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
+        // The night so far is saved whenever the screen comes on (SleepController).
+        sleepController.Flush();
         break;
       case Messages::UpdateBleConnection:
         // Only used for recovery firmware

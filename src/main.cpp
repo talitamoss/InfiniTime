@@ -32,6 +32,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/brightness/BrightnessController.h"
+#include "components/sleep/SleepController.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
@@ -110,6 +111,7 @@ Pinetime::Controllers::AlarmController alarmController {dateTimeController, fs};
 Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
+Pinetime::Controllers::SleepController sleepController {fs, dateTimeController, heartRateController, settingsController};
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               touchPanel,
@@ -124,6 +126,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motionController,
                                               stopWatchController,
                                               alarmController,
+                                              sleepController,
                                               brightnessController,
                                               touchHandler,
                                               fs,
@@ -138,6 +141,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         dateTimeController,
                                         stopWatchController,
                                         alarmController,
+                                        sleepController,
                                         watchdog,
                                         notificationManager,
                                         heartRateSensor,
